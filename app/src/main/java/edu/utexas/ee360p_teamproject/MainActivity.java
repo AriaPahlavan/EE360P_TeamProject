@@ -23,7 +23,18 @@ public class MainActivity extends AppCompatActivity {
         EditText username = (EditText) findViewById(R.id.editUsername);
         String name = username.getText().toString();
 
-        intent.putExtra(EXTRA_MESSAGE,name);
+        //send chosen chatroom to salesrep server, get the port number
+
+        //connect client with server using portnumber
+
+        //also need to send portnumber
+        //make bundle with name and portnumber
+        intent.putExtra(EXTRA_MESSAGE,name); //change input to bundle
+
+
+
+
+
         startActivity(intent);
     }
 

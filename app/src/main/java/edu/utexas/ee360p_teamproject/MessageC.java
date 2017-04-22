@@ -15,7 +15,7 @@ public class MessageC {
         this.timestamp=ts;
     }
 
-    public String toString(){
+    public String toTCPString(){
         String sendable= new String("");
 
         sendable += Long.toString(timestamp);
