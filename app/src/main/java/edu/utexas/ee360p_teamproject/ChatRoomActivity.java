@@ -20,11 +20,11 @@ public class ChatRoomActivity extends AppCompatActivity {
 
         //Get the Intent that started this activity and extract the string
         Intent intent = getIntent();
-        //receive port number and name
-        String name = intent.getStringExtra(MainActivity.EXTRA_MESSAGE);
 
-        myName = name;
-        //save portnumber
+        Bundle extras = intent.getExtras();
+        //receive port number and name
+        myName = extras.getString("EXTRA_USERNAME");
+        portNumber = extras.getInt("EXTRA_PORTNUM");
         messagesReceived = 0;
 
         //listener or while loop for new messages
