@@ -26,7 +26,7 @@ public class MainActivity extends AppCompatActivity {
         //send chosen chatroom to salesrep server
         // read port num back from server
         int pn=0; //pn = port num received from sales rep
-        
+
         //connect client with server using portnumber
 
 

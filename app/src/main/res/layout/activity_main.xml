@@ -15,22 +15,33 @@
         android:text="Chat!"
         tools:layout_editor_absoluteX="147dp"
         tools:layout_editor_absoluteY="368dp"
-        android:layout_centerVertical="true"
-        android:layout_alignParentStart="true"
-        android:layout_marginStart="136dp" />
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="132dp" />
 
     <EditText
         android:id="@+id/editUsername"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_above="@+id/enterRoomButton"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="65dp"
         android:ems="10"
         android:inputType="textPersonName"
-        android:text="Name"
-        tools:layout_editor_absoluteX="85dp"
-        tools:layout_editor_absoluteY="234dp"
+        android:text="Enter Username"
         tools:ignore="LabelFor"
-        android:layout_above="@+id/enterRoomButton"
-        android:layout_alignParentStart="true"
-        android:layout_marginStart="101dp"
-        android:layout_marginBottom="76dp" />
+        tools:layout_editor_absoluteX="85dp"
+        tools:layout_editor_absoluteY="234dp" />
+
+    <Spinner
+        android:id="@+id/chatRoomSelector"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignEnd="@+id/editUsername"
+        android:layout_alignParentTop="true"
+        android:layout_alignStart="@+id/editUsername"
+        android:layout_marginTop="88dp"
+        android:contextClickable="false"
+        android:visibility="visible" />
+
 </RelativeLayout>
