@@ -4,7 +4,9 @@ import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.Spinner;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -16,6 +18,13 @@ public class MainActivity extends AppCompatActivity {
         ///comment
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        Spinner roomSelector = (Spinner)findViewById(R.id.chatRoomSelector);
+        //ask coordinator for available rooms in strings and replace rooms below with those strings
+        String[] items = new String[]{"Room 1", "Room 2", "Room 3"};
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, items);
+        roomSelector.setAdapter(adapter);
+
     }
 
     public void enterRoom(View view){
