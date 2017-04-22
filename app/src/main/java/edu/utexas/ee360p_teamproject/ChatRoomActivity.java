@@ -26,14 +26,9 @@ public class ChatRoomActivity extends AppCompatActivity {
         Bundle extras = intent.getExtras();
         //receive port number and name
         myName = extras.getString("EXTRA_USERNAME");
-        portNumber = extras.getInt("EXTRA_PORTNUM");
         messagesReceived = 0;
 
-        //listener or while loop for new messages
-        for(int i=0;i< 8000; i++){
-            ArrayList<MessageC> newMsgs = new ArrayList<MessageC>();
-            //newMsgs = updateChatList(messagesReceived);
-        }
+        /////TODO - check for new messages in bckgrnd (updateChatList(#)) ------ ASYNCH TASK?? 
             //sends messages received to server
             //waits for server to respond for new messages
             //display new messages
@@ -48,7 +43,7 @@ public class ChatRoomActivity extends AppCompatActivity {
                 MessageC toSend = new MessageC(myName, msgString, System.currentTimeMillis());
                 String msg = toSend.toTCPString();
 
-                //send msg to server
+                // TODO - sendMsg(MessageC.toTCPString) -- send message to middle man
 
             }
         });

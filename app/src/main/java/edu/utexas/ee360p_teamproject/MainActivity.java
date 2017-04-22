@@ -20,6 +20,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         Spinner roomSelector = (Spinner)findViewById(R.id.chatRoomSelector);
+        // TODO - getAllRooms() -- get rooms from middle man and put in Spinner
         //ask coordinator for available rooms in strings and replace rooms below with those strings
         String[] items = new String[]{"Room 1", "Room 2", "Room 3"};
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, items);
@@ -32,20 +33,11 @@ public class MainActivity extends AppCompatActivity {
         EditText username = (EditText) findViewById(R.id.editUsername);
         String name = username.getText().toString();
 
-        //send chosen chatroom to salesrep server
-        // read port num back from server
-        int pn=0; //pn = port num received from sales rep
-
-        //connect client with server using portnumber
-
+        // TODO - setRoom(String)  send chosen chatroom to middle man who will comment client to chatroom
 
         Bundle extras = new Bundle();
         extras.putString("EXTRA_USERNAME", name);
-        extras.putInt("EXTRA_PORTNUM",pn);
         intent.putExtras(extras);
-
-
-
 
 
         startActivity(intent);
