@@ -16,18 +16,15 @@ class TCPConnection {
     private final static int port   = 8080;
     private final static String ip  = "10.0.2.2";
     private MessageCallback listener = null;
-    private final Handler handler;
     private String command;
     private boolean mRun = false;
 
 
     /**
-     * @param handler  handler for updating the UI with sent messages
      * @param command  command for the server
      * @param listener Callback listener
      */
-    TCPConnection(Handler handler, String command, MessageCallback listener) {
-        this.handler  = handler;
+    TCPConnection(String command, MessageCallback listener) {
         this.command  = command;
         this.listener = listener;
     }
@@ -44,7 +41,7 @@ class TCPConnection {
 
         socket_out.println(message);
         socket_out.flush();
-        handler.sendEmptyMessageDelayed(SENDING, 1000);
+        log(SENDING);
         Log.d(TAG, "Sent Message: " + message);
     }
 
@@ -60,14 +57,14 @@ class TCPConnection {
         Log.d(TAG, "Connecting...");
         String incomingMessage = "No incoming messages";
         mRun = true;
-        handler.sendEmptyMessageDelayed(CONNECTING, 1000);
+        log(CONNECTING);
 
         ClientSocket clientSocket;
 
         try {
             clientSocket = new ClientSocket(ip, port);
 
-            handler.sendEmptyMessageDelayed(SENDING, 2000);
+            log(SENDING);
             this.sendMessage(command,
                              clientSocket.outStream());
 
@@ -87,10 +84,10 @@ class TCPConnection {
         catch (Exception e) {
             e.printStackTrace();
             Log.d(TAG, "Error", e);
-            handler.sendEmptyMessageDelayed(ERROR, 2000);
+            log(ERROR);
 
         } finally {
-            handler.sendEmptyMessageDelayed(SENT, 3000);
+            log(SENT);
             Log.d(TAG, "Socket Closed");
         }
     }

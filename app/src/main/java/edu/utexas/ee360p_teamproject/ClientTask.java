@@ -20,19 +20,12 @@ class ClientTask extends AsyncTask<String, String, TCPConnection> {
     static final String SEND   = "Send new messages";
     static final String UPDATE = "Get Updates";
 
-    private Handler handler;
-
     /**
      * ShutdownAsyncTask constructor with handler passed as argument. The UI is updated via handler.
      * In doInBackground(...) method, the handler is passed to TCPConnection object.
      *
-     * @param handler Handler object that is retrieved from MainActivity class and passed to TCPConnection
-     *                class for sending messages and updating UI.
      */
-    ClientTask(Handler handler) {
-//        this.handler = ClientHandler.singletonHandler();
-        this.handler = handler;
-    }
+    ClientTask() {}
 
     /**
      * Overriden method from AsyncTask class. There the TCPConnection object is created.
@@ -56,8 +49,7 @@ class ClientTask extends AsyncTask<String, String, TCPConnection> {
         TCPConnection connection = null;
 
         try {
-            connection = new TCPConnection(handler,
-                                          COMMAND,
+            connection = new TCPConnection(COMMAND,
                                           this::publishProgress);
             connection.run();
         }

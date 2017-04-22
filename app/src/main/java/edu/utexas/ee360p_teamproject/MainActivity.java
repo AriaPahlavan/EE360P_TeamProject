@@ -6,6 +6,7 @@ import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.TextView;
 
 import static edu.utexas.ee360p_teamproject.ClientHandler.CONNECTING;
 import static edu.utexas.ee360p_teamproject.ClientHandler.ERROR;
@@ -15,6 +16,7 @@ import static edu.utexas.ee360p_teamproject.ClientHandler.SENT;
 
 public class MainActivity extends AppCompatActivity {
     private final static String TAG = "MainActivity";
+    private TextView t;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,6 +40,6 @@ public class MainActivity extends AppCompatActivity {
             }
         };
 
-        new ClientTask(handler).execute();
+        new ClientTask().execute();
     }
 }
