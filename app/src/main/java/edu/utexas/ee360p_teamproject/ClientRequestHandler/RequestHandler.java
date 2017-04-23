@@ -39,7 +39,14 @@ public class RequestHandler {
      * @param name name of the chatroom to enter
      */
     public static void enterChatroom(String name){
-        new ClientTask(ClientTask.ROOM, name).execute();
+        try {
+            new ClientTask(ClientTask.ROOM, name).execute()
+                                                 .get()
+                                                 .responseIfAvailable();
+        }
+        catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -49,8 +56,15 @@ public class RequestHandler {
      * @param message the new message to be sent
      */
     public static void sendMessage(MessageC message){
-        new ClientTask(ClientTask.SEND, message.toString())
-                .execute();
+        try {
+            new ClientTask(ClientTask.SEND, message.toString())
+                    .execute()
+                    .get()
+                    .responseIfAvailable();
+        }
+        catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -66,7 +80,7 @@ public class RequestHandler {
      *         NOTE: if there are no updates, the list of messages returned
      *         will be empty
      */
-    public static List<MessageC> getUpdates(int count){
+    public static List<MessageC> notifications(int count){
         try {
             List<MessageC> newMessages = new ArrayList<>();
             List<String> messagesStr =

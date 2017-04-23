@@ -42,7 +42,7 @@ class TCPConnection {
         return resposne;
     }
 
-    List<String> run() {
+    void run() {
         log(CONNECTING);
 
         List<String> serverResponse = new ArrayList<>();
@@ -58,17 +58,27 @@ class TCPConnection {
                     serverResponse = initializeServer(clientSocket);
                     break;
                 case ClientTask.ROOM:
-
+                    Log.d(TAG, "Selecting room: " + command);
                     selectChatroom(clientSocket);
+                    Log.d(TAG, "Changed port to " + port);
                     log(SENT);
                     break;
                 case ClientTask.SEND:
+                    if (port==8080) Log.e(TAG, "have not entered a chatroom yet");
+
+                    Log.d(TAG, "Sending new message: " + command);
                     sendMessage(command,
                                 clientSocket.outStream());
-                    log(SENT);
+                    Log.d(TAG, "message was sent");
                     break;
                 case ClientTask.UPDATE:
+                    if (port==8080) Log.e(TAG, "have not entered a chatroom yet");
+
+                    Log.d(TAG, "checking for notifications, current count: " + command);
                     serverResponse = getNotifications(clientSocket);
+
+                    if (serverResponse!=null && !serverResponse.isEmpty())
+                        Log.d(TAG, serverResponse.get(0) + "new notifications received");
                     break;
             }
             log(DONE);
@@ -83,34 +93,6 @@ class TCPConnection {
 
         resposne = serverResponse;
         isReady = true;
-        return serverResponse;
-    }
-
-    private List<String> getNotifications(ClientSocket clientSocket) throws IOException {
-        List<String> serverResponse = new ArrayList<>();
-
-        sendMessage(command, clientSocket.outStream());
-        sendMessage("GetALL", clientSocket.outStream());
-
-        String response = clientSocket.inStream()
-                                      .readLine();
-
-        serverResponse.add(response);
-        int newPostsCount = Integer.parseInt(response);
-
-        for (int i = 0; i < newPostsCount; i++) {
-            String timeStamp = clientSocket.inStream()
-                                           .readLine();
-            String author    = clientSocket.inStream()
-                                           .readLine();
-            String msg       = clientSocket.inStream()
-                                           .readLine();
-            serverResponse.add(timeStamp);
-            serverResponse.add(author);
-            serverResponse.add(msg);
-        }
-
-        return serverResponse;
     }
 
     private List<String> initializeServer(ClientSocket clientSocket) throws IOException {
@@ -151,6 +133,33 @@ class TCPConnection {
         socket_out.flush();
         log(SENDING);
         Log.d(TAG, "Sent Message: " + message);
+    }
+
+    private List<String> getNotifications(ClientSocket clientSocket) throws IOException {
+        List<String> serverResponse = new ArrayList<>();
+
+        sendMessage(command, clientSocket.outStream());
+        sendMessage("GetALL", clientSocket.outStream());
+
+        String response = clientSocket.inStream()
+                                      .readLine();
+
+        serverResponse.add(response);
+        int newPostsCount = Integer.parseInt(response);
+
+        for (int i = 0; i < newPostsCount; i++) {
+            String timeStamp = clientSocket.inStream()
+                                           .readLine();
+            String author    = clientSocket.inStream()
+                                           .readLine();
+            String msg       = clientSocket.inStream()
+                                           .readLine();
+            serverResponse.add(timeStamp);
+            serverResponse.add(author);
+            serverResponse.add(msg);
+        }
+
+        return serverResponse;
     }
 
     private void log(ConnectionStatus tag){
