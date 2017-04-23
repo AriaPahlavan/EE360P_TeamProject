@@ -1,11 +1,14 @@
 package edu.utexas.ee360p_teamproject;
 
+import android.content.Context;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,7 +23,9 @@ public class ChatRoomActivity extends AppCompatActivity {
     private int messagesReceived;
     private Thread notificatonHandler;
 
-    private List<String> chats = new ArrayList<String>();
+    private List<String> chats = new ArrayList<>();
+    private Context context;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,11 +40,9 @@ public class ChatRoomActivity extends AppCompatActivity {
         myName = extras.getString("EXTRA_USERNAME");
         messagesReceived = 0;
 
-        /////TODO - check for new messages in bckgrnd (updateChatList(#)) ------ ASYNCH TASK?? 
-            //sends messages received to server
-            //waits for server to respond for new messages
-            //display new messages
         notificatonHandler = new Thread(runnable);
+
+        context = getApplicationContext();
 
         // listener for send messages
         final Button sendMessage = (Button) findViewById(R.id.sendMessage);
@@ -71,6 +74,20 @@ public class ChatRoomActivity extends AppCompatActivity {
                 }
                 else{
 
+                    ListView chatList = (ListView) findViewById(R.id.chatList);
+                    for(int i=0; i<notifications.size(); i++){
+                        String totalChat = notifications.get(i).timestamp + " " + notifications.get(i).author+": " + notifications.get(i).content;
+                        chats.add(totalChat);
+                        messagesReceived++;
+                    }
+
+                    String[] values = chats.toArray(new String[chats.size()]);
+
+                    ArrayAdapter<String> adapter = new ArrayAdapter<String>(context, android.R.layout.simple_list_item_1, android.R.id.text1, values);
+
+                    chatList.setAdapter(adapter);
+
+                    
                 }
             }
         }
