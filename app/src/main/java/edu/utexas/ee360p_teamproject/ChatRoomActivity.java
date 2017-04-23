@@ -7,13 +7,20 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import edu.utexas.ee360p_teamproject.ClientRequestHandler.RequestHandler;
+
 
 public class ChatRoomActivity extends AppCompatActivity {
 
-    String myName;
-    int portNumber;
-    int messagesReceived;
-    Thread notificatonHandler;
+    private String myName;
+    private int portNumber;
+    private int messagesReceived;
+    private Thread notificatonHandler;
+
+    private List<String> chats = new ArrayList<String>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,7 +51,10 @@ public class ChatRoomActivity extends AppCompatActivity {
                 MessageC toSend = new MessageC(myName, msgString, System.currentTimeMillis());
                 String msg = toSend.toString();
 
-                // TODO - sendMsg(MessageC.toTCPString) -- send message to middle man
+                //sendMsg(MessageC.toTCPString) -- send message to middle man
+                RequestHandler.sendMessage(new MessageC(myName, msg, System.currentTimeMillis()));
+
+                //maybe TODO - update chatList
 
             }
         });
@@ -56,7 +66,20 @@ public class ChatRoomActivity extends AppCompatActivity {
         public void run() {
             while (true){
                 //call function to get updates
+                List<MessageC> notifications = RequestHandler.notifications(messagesReceived);
+
                 //add new messages in a queue
+                if((notifications == null) || notifications.isEmpty()){
+
+                }
+                else{
+
+                }
+
+
+
+
+
             }
         }
     };

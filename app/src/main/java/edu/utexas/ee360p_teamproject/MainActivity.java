@@ -10,6 +10,7 @@ import android.widget.Spinner;
 import android.util.Log;
 import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import edu.utexas.ee360p_teamproject.ClientRequestHandler.RequestHandler;
@@ -21,7 +22,7 @@ public class MainActivity extends AppCompatActivity {
     public static final String EXTRA_MESSAGE = "com.example.chatroomclient.MESSAGE";
 
 
-    
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         ///comment
@@ -29,9 +30,10 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         Spinner roomSelector = (Spinner)findViewById(R.id.chatRoomSelector);
-        // TODO - getAllRooms() -- get rooms from middle man and put in Spinner
+
         //ask coordinator for available rooms in strings and replace rooms below with those strings
-        String[] items = new String[]{"Room 1", "Room 2", "Room 3"};
+        List<String> chatrooms = RequestHandler.listOfAllRooms();
+        String[] items = chatrooms.toArray(new String[chatrooms.size()]);
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, items);
         roomSelector.setAdapter(adapter);
 
@@ -44,7 +46,11 @@ public class MainActivity extends AppCompatActivity {
         EditText username = (EditText) findViewById(R.id.editUsername);
         String name = username.getText().toString();
 
-        // TODO - setRoom(String)  send chosen chatroom to middle man who will comment client to chatroom
+        Spinner roomSelector = (Spinner)findViewById(R.id.chatRoomSelector);
+        String room = roomSelector.getSelectedItem().toString();
+
+        // setRoom(String)  send chosen chatroom to middle man who will comment client to chatroom
+        RequestHandler.enterChatroom(room);
 
         Bundle extras = new Bundle();
         extras.putString("EXTRA_USERNAME", name);
