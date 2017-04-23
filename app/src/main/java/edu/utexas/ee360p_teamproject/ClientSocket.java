@@ -12,9 +12,9 @@ import java.net.Socket;
  */
 
 class ClientSocket {
-    Socket clientSocket;
-    BufferedReader in;
-    PrintWriter out;
+    private Socket clientSocket;
+    private BufferedReader in;
+    private PrintWriter out;
 
     public ClientSocket(String ip, int port) throws IOException {
         clientSocket      = new Socket(ip, port);

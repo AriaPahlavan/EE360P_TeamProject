@@ -1,11 +1,15 @@
 package edu.utexas.ee360p_teamproject;
 
-import android.os.Handler;
 import android.util.Log;
-
 import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.List;
 
-import static edu.utexas.ee360p_teamproject.ClientHandler.*;
+import static edu.utexas.ee360p_teamproject.RequestHandler.CONNECTING;
+import static edu.utexas.ee360p_teamproject.RequestHandler.ERROR;
+import static edu.utexas.ee360p_teamproject.RequestHandler.RECEIVED;
+import static edu.utexas.ee360p_teamproject.RequestHandler.SENDING;
+import static edu.utexas.ee360p_teamproject.RequestHandler.SENT;
 
 /**
  * Created by aria on 4/21/17.
@@ -13,20 +17,18 @@ import static edu.utexas.ee360p_teamproject.ClientHandler.*;
 
 class TCPConnection {
     private static final String TAG = "TCPConnection";
-    private final static int port   = 8080;
+    private static int port   = 8080;
     private final static String ip  = "10.0.2.2";
-    private MessageCallback listener = null;
-    private String command;
-    private boolean mRun = false;
+    private String command, tag;
 
 
     /**
+     * @param tag
      * @param command  command for the server
-     * @param listener Callback listener
      */
-    TCPConnection(String command, MessageCallback listener) {
+    TCPConnection(String tag, String command) {
+        this.tag = tag;
         this.command  = command;
-        this.listener = listener;
     }
 
     /**
@@ -45,18 +47,12 @@ class TCPConnection {
         Log.d(TAG, "Sent Message: " + message);
     }
 
-    /**
-     * stops the TCPConnection object from AsyncTask
-     */
-    public void stopClient() {
-        Log.d(TAG, "Client stopped!");
-        mRun = false;
-    }
-
-    void run() {
+    List<String> run() {
         Log.d(TAG, "Connecting...");
-        String incomingMessage = "No incoming messages";
-        mRun = true;
+
+        String response;
+        List<String> serverResponse = new ArrayList<>();
+
         log(CONNECTING);
 
         ClientSocket clientSocket;
@@ -65,21 +61,57 @@ class TCPConnection {
             clientSocket = new ClientSocket(ip, port);
 
             log(SENDING);
-            this.sendMessage(command,
-                             clientSocket.outStream());
 
-            //Listen for the incoming messages
-            while (mRun) {
-                incomingMessage = clientSocket.inStream()
-                                              .readLine();
+            switch (tag) {
+                case ClientTask.INIT:
+                    response = clientSocket.inStream()
+                                           .readLine();
 
-                if (incomingMessage != null && listener != null)
-                    listener.callbackMessageReceiver(incomingMessage);
+                    int roomCount = Integer.parseInt(response);
 
-                incomingMessage = null;
+                    for (int i = 0; i < roomCount; i++)
+                        serverResponse.add(clientSocket.inStream()
+                                                       .readLine());
+                    break;
+                case ClientTask.ROOM:
+                    sendMessage(command,
+                                clientSocket.outStream());
+
+                    //Update port to desired chat-room
+                    port = Integer.parseInt(clientSocket.inStream()
+                                                        .readLine());
+                    break;
+                case ClientTask.SEND:
+                    sendMessage(command,
+                                clientSocket.outStream());
+                    break;
+                case ClientTask.UPDATE:
+                    sendMessage(command,
+                                clientSocket.outStream());
+                    sendMessage("GetALL",
+                                clientSocket.outStream());
+
+                    response = clientSocket.inStream()
+                                           .readLine();
+
+                    serverResponse.add(response);
+                    int newPostsCount = Integer.parseInt(response);
+
+                    for (int i = 0; i < newPostsCount; i++) {
+                        String timeStamp = clientSocket.inStream()
+                                                       .readLine();
+                        String author    = clientSocket.inStream()
+                                                       .readLine();
+                        String msg       = clientSocket.inStream()
+                                                       .readLine();
+                        serverResponse.add(timeStamp);
+                        serverResponse.add(author);
+                        serverResponse.add(msg);
+                    }
+                    break;
             }
 
-            Log.d(TAG, "Received Message: " + incomingMessage);
+            log(RECEIVED);
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -90,6 +122,8 @@ class TCPConnection {
             log(SENT);
             Log.d(TAG, "Socket Closed");
         }
+
+        return serverResponse;
     }
 
     private void log(int tag){
@@ -101,13 +135,5 @@ class TCPConnection {
             case ERROR:      Log.d(TAG, "Error...");      break;
             default:         Log.d(TAG, "Default value... ERROR");
         }
-    }
-
-    /**
-     * Callback Interface for sending received messages to 'onPublishProgress' method in AsyncTask.
-     */
-    @FunctionalInterface
-    interface MessageCallback {
-        void callbackMessageReceiver(String message);
     }
 }

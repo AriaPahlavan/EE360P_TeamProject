@@ -13,8 +13,9 @@ import java.util.Arrays;
  */
 
 class ClientTask extends AsyncTask<String, String, TCPConnection> {
-    private static final String COMMAND = "list";
-    private static final String TAG = "ShutdownAsyncTask";
+    private static final String TAG = "ClientTask";
+    private String command;
+    private String tag;
     static final String INIT   = "Initialization";
     static final String ROOM   = "Select a room";
     static final String SEND   = "Send new messages";
@@ -25,32 +26,26 @@ class ClientTask extends AsyncTask<String, String, TCPConnection> {
      * In doInBackground(...) method, the handler is passed to TCPConnection object.
      *
      */
-    ClientTask() {}
+    ClientTask(String tag, String command) {
+        this.tag = tag;
+        this.command = command;
+    }
 
     /**
-     * Overriden method from AsyncTask class. There the TCPConnection object is created.
+     * create a tcp object and return it.
      *
      * @param params From MainActivity class empty string is passed.
-     * @return TCPConnection object for closing it socket_in onPostExecute method.
+     * @return TCPConnection object for closing it in onPostExecute method.
      */
     @Override
     protected TCPConnection doInBackground(String... params) {
         Log.d(TAG, "In doInBackground");
 
-        String command;
-
-        switch (params[0]) {
-            case INIT:  break;
-            case ROOM:  break;
-            case SEND:  break;
-            case UPDATE:break;
-        }
-
         TCPConnection connection = null;
 
         try {
-            connection = new TCPConnection(COMMAND,
-                                          this::publishProgress);
+            connection = new TCPConnection(tag,
+                                           command);
             connection.run();
         }
         catch (NullPointerException e) {
