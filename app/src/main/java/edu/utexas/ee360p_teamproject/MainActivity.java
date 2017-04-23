@@ -21,6 +21,7 @@ public class MainActivity extends AppCompatActivity {
     public static final String EXTRA_MESSAGE = "com.example.chatroomclient.MESSAGE";
 
 
+    
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         ///comment
