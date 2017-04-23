@@ -33,6 +33,7 @@ public class MainActivity extends AppCompatActivity {
 
         //ask coordinator for available rooms in strings and replace rooms below with those strings
         List<String> chatrooms = RequestHandler.listOfAllRooms();
+        chatrooms.add("Other");
         String[] items = chatrooms.toArray(new String[chatrooms.size()]);
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, items);
         roomSelector.setAdapter(adapter);
@@ -40,6 +41,8 @@ public class MainActivity extends AppCompatActivity {
         //from Aria
 //        testConnectionToServer();
     }
+
+
 
     public void enterRoom(View view){
         Intent intent = new Intent(this, ChatRoomActivity.class);

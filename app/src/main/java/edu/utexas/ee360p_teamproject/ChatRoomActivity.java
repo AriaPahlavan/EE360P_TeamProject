@@ -9,6 +9,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,7 +43,7 @@ public class ChatRoomActivity extends AppCompatActivity {
         thisRoom = extras.getString("EXTRA_ROOM");
         messagesReceived = 0;
 
-        EditText chatRoom = (EditText) findViewById(R.id.chatRoomTitle);
+        TextView chatRoom = (TextView) findViewById(R.id.chatRoomTitle);
         chatRoom.setText(thisRoom);
 
         notificatonHandler = new Thread(runnable);
@@ -61,6 +62,14 @@ public class ChatRoomActivity extends AppCompatActivity {
             RequestHandler.sendMessage(toSend);
 
             //maybe TODO - update chatList
+            ListView chatList = (ListView) findViewById(R.id.chatList);
+            chats.add("Hello");
+            chats.add("This is a test");
+            String[] values = chats.toArray(new String[chats.size()]);
+
+            ArrayAdapter<String> adapter = new ArrayAdapter<String>(context, android.R.layout.simple_list_item_1, android.R.id.text1, values);
+
+            chatList.setAdapter(adapter);
 
         });
 
