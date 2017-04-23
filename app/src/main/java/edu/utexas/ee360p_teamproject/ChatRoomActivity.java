@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -15,6 +14,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import edu.utexas.ee360p_teamproject.ClientRequestHandler.RequestHandler;
+
+import static java.lang.Thread.sleep;
 
 
 public class ChatRoomActivity extends AppCompatActivity {
@@ -46,8 +47,8 @@ public class ChatRoomActivity extends AppCompatActivity {
         TextView chatRoom = (TextView) findViewById(R.id.chatRoomTitle);
         chatRoom.setText(thisRoom);
 
-        notificatonHandler = new Thread(runnable);
-        notificatonHandler.start();
+//        notificatonHandler = new Thread(runnable);
+//        notificatonHandler.start();
 
         context = getApplicationContext();
 
@@ -105,29 +106,37 @@ public class ChatRoomActivity extends AppCompatActivity {
         }
     }
 
-    Runnable runnable = () -> {
-        while (true) {
-            //call function to get updates
-            List<MessageC> notifications = RequestHandler.notifications(messagesReceived);
-
-            //add new messages in a queue
-            if ((notifications == null) || notifications.isEmpty())
-                continue;
-
-
-            ListView chatList = (ListView) findViewById(R.id.chatList);
-            for (int i = 0; i < notifications.size(); i++) {
-                String totalChat = notifications.get(i).timestamp + " " + notifications.get(i).author + ": " + notifications.get(i).content;
-                chats.add(totalChat);
-                messagesReceived++;
-            }
-
-            String[] values = chats.toArray(new String[chats.size()]);
-
-            ArrayAdapter<String> adapter = new ArrayAdapter<>(context, android.R.layout.simple_list_item_1, android.R.id.text1, values);
-
-            chatList.setAdapter(adapter);
-        }
-    };
+//    Runnable runnable = () -> {
+//        while (true) {
+//            //call function to get updates
+//            List<MessageC> notifications = RequestHandler.notifications(messagesReceived);
+//
+//            //no new messages received
+//            if ((notifications == null) || notifications.isEmpty())
+//                continue;
+//
+//            //add new messages in a queue
+//            ListView chatList = (ListView) findViewById(R.id.chatList);
+//            for (int i = 0; i < notifications.size(); i++) {
+//                String totalChat = notifications.get(i).timestamp + " " + notifications.get(i).author + ": " + notifications.get(i).content;
+//                chats.add(totalChat);
+//                messagesReceived++;
+//            }
+//
+//            String[] values = chats.toArray(new String[chats.size()]);
+//
+//            ArrayAdapter<String> adapter = new ArrayAdapter<>(context, android.R.layout.simple_list_item_1, android.R.id.text1, values);
+//
+//            chatList.setAdapter(adapter);
+//
+//            try {
+//                sleep(5000);
+//            }
+//            catch (InterruptedException e) {
+//                e.printStackTrace();
+//            }
+//        }
+//
+//    };
 
 }
