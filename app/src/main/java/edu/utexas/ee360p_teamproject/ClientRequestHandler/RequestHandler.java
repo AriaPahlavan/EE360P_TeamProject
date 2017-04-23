@@ -23,7 +23,7 @@ public class RequestHandler {
         try {
             return new ClientTask(ClientTask.INIT, null).execute()
                                                         .get()
-                                                        .run();
+                                                        .responseIfAvailable();
         }
         catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
@@ -39,14 +39,7 @@ public class RequestHandler {
      * @param name name of the chatroom to enter
      */
     public static void enterChatroom(String name){
-        try {
-            new ClientTask(ClientTask.ROOM, name).execute()
-                                                        .get()
-                                                        .run();
-        }
-        catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
-        }
+        new ClientTask(ClientTask.ROOM, name).execute();
     }
 
     /**
@@ -80,7 +73,7 @@ public class RequestHandler {
                     new ClientTask(ClientTask.UPDATE, String.valueOf(count))
                             .execute()
                             .get()
-                            .run();
+                            .responseIfAvailable();
 
             int msgCount = Integer.parseInt(messagesStr.remove(0));
 

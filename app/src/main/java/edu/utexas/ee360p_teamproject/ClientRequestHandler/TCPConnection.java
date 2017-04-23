@@ -19,23 +19,30 @@ class TCPConnection {
     private static int port   = 8080;
     private final static String ip  = "10.0.2.2";
     private String command, tag;
+    private boolean isReady;
+    private List<String> resposne;
 
     enum ConnectionStatus{
         CONNECTING,
         ERROR,
-        RECEIVED,
+        DONE,
         SENDING,
         SENT
     }
 
-
     TCPConnection(String tag, String command) {
         this.tag = tag;
         this.command  = command;
+        this.isReady = false;
+    }
+
+    public List<String> responseIfAvailable(){
+        while (!isReady) {}
+
+        return resposne;
     }
 
     List<String> run() {
-        Log.d(TAG, "Connecting...");
         log(CONNECTING);
 
         List<String> serverResponse = new ArrayList<>();
@@ -45,35 +52,37 @@ class TCPConnection {
             log(SENDING);
 
             clientSocket = new ClientSocket(ip, port);
-
             switch (tag) {
                 case ClientTask.INIT:
+                    Log.d(TAG, "Initializing...");
                     serverResponse = initializeServer(clientSocket);
                     break;
                 case ClientTask.ROOM:
+
                     selectChatroom(clientSocket);
+                    log(SENT);
                     break;
                 case ClientTask.SEND:
                     sendMessage(command,
                                 clientSocket.outStream());
+                    log(SENT);
                     break;
                 case ClientTask.UPDATE:
                     serverResponse = getNotifications(clientSocket);
                     break;
             }
-
-            log(RECEIVED);
+            log(DONE);
         }
         catch (Exception e) {
-            e.printStackTrace();
-            Log.d(TAG, "Error", e);
             log(ERROR);
+            e.printStackTrace();
 
         } finally {
-            log(SENT);
             Log.d(TAG, "Socket Closed");
         }
 
+        resposne = serverResponse;
+        isReady = true;
         return serverResponse;
     }
 
@@ -107,14 +116,20 @@ class TCPConnection {
     private List<String> initializeServer(ClientSocket clientSocket) throws IOException {
         List<String> serverResponse = new ArrayList<>();
 
+        Log.d(TAG, "Getting count of avail rooms...");
         String response = clientSocket.inStream()
                                       .readLine();
 
         int roomCount = Integer.parseInt(response);
 
-        for (int i = 0; i < roomCount; i++)
+        Log.d(TAG, "there are " + roomCount + " rooms available");
+
+        for (int i = 0; i < roomCount; i++) {
+            Log.d(TAG, "Getting name of room #" + (i+1));
+
             serverResponse.add(clientSocket.inStream()
                                            .readLine());
+        }
 
         return serverResponse;
     }
@@ -143,7 +158,7 @@ class TCPConnection {
             case CONNECTING: Log.d(TAG, "Connecting..."); break;
             case SENDING:    Log.d(TAG, "Sending...");    break;
             case SENT:       Log.d(TAG, "Sent...");       break;
-            case RECEIVED:   Log.d(TAG, "Received...");   break;
+            case DONE:       Log.d(TAG, "Done...");       break;
             case ERROR:      Log.d(TAG, "Error...");      break;
             default:         Log.d(TAG, "Default value... ERROR");
         }
