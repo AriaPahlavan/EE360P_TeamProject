@@ -18,7 +18,7 @@ class TCPConnection {
     private static final String TAG = "TCPConnection";
     private static ClientSocket coordinator;
     private static int port   = 8080;
-    private final static String ip  = "10.0.2.2";
+    private final static String ip  = "10.145.49.170"; //"10.0.2.2";
     private String command, tag;
     private boolean readyFlag;
     private List<String> resposne;
