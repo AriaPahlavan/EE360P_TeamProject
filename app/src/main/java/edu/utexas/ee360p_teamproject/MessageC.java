@@ -1,7 +1,6 @@
 package edu.utexas.ee360p_teamproject;
 
 import java.util.ArrayList;
-
 /**
  * Created by Bailey on 4/22/2017.
  */
@@ -11,13 +10,13 @@ public class MessageC {
     String content;
     long timestamp; //System.currentTimeMillis()
 
-    MessageC(String name, String msg, long ts){
+    public MessageC(String name, String msg, long ts){
         this.author=name;
         this.content=msg;
         this.timestamp=ts;
     }
 
-    public String toTCPString(){
+    public String toString(){
         String sendable= new String("");
 
         sendable += Long.toString(timestamp);
@@ -29,5 +28,4 @@ public class MessageC {
         //timestamp = Long.toString(System.currentTimeMillis())
         return sendable;
     }
-
 }

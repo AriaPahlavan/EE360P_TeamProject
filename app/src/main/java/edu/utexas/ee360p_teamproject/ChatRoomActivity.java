@@ -42,7 +42,7 @@ public class ChatRoomActivity extends AppCompatActivity {
                 String msgString = message.getText().toString();
 
                 MessageC toSend = new MessageC(myName, msgString, System.currentTimeMillis());
-                String msg = toSend.toTCPString();
+                String msg = toSend.toString();
 
                 // TODO - sendMsg(MessageC.toTCPString) -- send message to middle man
 
