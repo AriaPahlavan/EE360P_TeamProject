@@ -70,6 +70,11 @@ public class ChatRoomActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+    }
+
     private void displayNewMessage(String msgString) {
         MessageC toSend = new MessageC(myName,
                                        msgString,
