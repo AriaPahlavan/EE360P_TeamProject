@@ -47,6 +47,7 @@ public class ChatRoomActivity extends AppCompatActivity {
         chatRoom.setText(thisRoom);
 
         notificatonHandler = new Thread(runnable);
+        notificatonHandler.start();
 
         context = getApplicationContext();
 
@@ -56,54 +57,63 @@ public class ChatRoomActivity extends AppCompatActivity {
             EditText message = (EditText) findViewById(R.id.messageToSend);
             String msgString = message.getText().toString();
 
-            MessageC toSend = new MessageC(myName,
-                                           msgString,
-                                           System.currentTimeMillis());
-            RequestHandler.sendMessage(toSend);
-
-            //maybe TODO - update chatList
-            ListView chatList = (ListView) findViewById(R.id.chatList);
-            chats.add("Hello");
-            chats.add("This is a test");
-            String[] values = chats.toArray(new String[chats.size()]);
-
-            ArrayAdapter<String> adapter = new ArrayAdapter<String>(context, android.R.layout.simple_list_item_1, android.R.id.text1, values);
-
-            chatList.setAdapter(adapter);
-
+            displayNewMessage(msgString);
         });
 
     }
 
-    Runnable runnable = new Runnable() {
-        @Override
-        public void run() {
-            while (true){
-                //call function to get updates
-                List<MessageC> notifications = RequestHandler.notifications(messagesReceived);
+    private void displayNewMessage(String msgString) {
+        MessageC toSend = new MessageC(myName,
+                                       msgString,
+                                       System.currentTimeMillis());
+        RequestHandler.sendMessage(toSend);
 
-                //add new messages in a queue
-                if((notifications == null) || notifications.isEmpty()){
+        //call function to get updates
+        List<MessageC> notifications = RequestHandler.notifications(messagesReceived);
 
-                }
-                else{
+        //add new messages in a queue
+        if((notifications == null) || notifications.isEmpty()){
 
-                    ListView chatList = (ListView) findViewById(R.id.chatList);
-                    for(int i=0; i<notifications.size(); i++){
-                        String totalChat = notifications.get(i).timestamp + " " + notifications.get(i).author+": " + notifications.get(i).content;
-                        chats.add(totalChat);
-                        messagesReceived++;
-                    }
+        }
+        else{
 
-                    String[] values = chats.toArray(new String[chats.size()]);
-
-                    ArrayAdapter<String> adapter = new ArrayAdapter<String>(context, android.R.layout.simple_list_item_1, android.R.id.text1, values);
-
-                    chatList.setAdapter(adapter);
-
-                    
-                }
+            ListView chatList = (ListView) findViewById(R.id.chatList);
+            for(int i=0; i<notifications.size(); i++){
+                String totalChat = notifications.get(i).timestamp + " " + notifications.get(i).author+": " + notifications.get(i).content;
+                chats.add(totalChat);
+                messagesReceived++;
             }
+
+            String[] values = chats.toArray(new String[chats.size()]);
+
+            ArrayAdapter<String> adapter = new ArrayAdapter<>(context, android.R.layout.simple_list_item_1, android.R.id.text1, values);
+
+            chatList.setAdapter(adapter);
+        }
+    }
+
+    Runnable runnable = () -> {
+        while (true) {
+            //call function to get updates
+            List<MessageC> notifications = RequestHandler.notifications(messagesReceived);
+
+            //add new messages in a queue
+            if ((notifications == null) || notifications.isEmpty())
+                continue;
+
+
+            ListView chatList = (ListView) findViewById(R.id.chatList);
+            for (int i = 0; i < notifications.size(); i++) {
+                String totalChat = notifications.get(i).timestamp + " " + notifications.get(i).author + ": " + notifications.get(i).content;
+                chats.add(totalChat);
+                messagesReceived++;
+            }
+
+            String[] values = chats.toArray(new String[chats.size()]);
+
+            ArrayAdapter<String> adapter = new ArrayAdapter<>(context, android.R.layout.simple_list_item_1, android.R.id.text1, values);
+
+            chatList.setAdapter(adapter);
         }
     };
 
