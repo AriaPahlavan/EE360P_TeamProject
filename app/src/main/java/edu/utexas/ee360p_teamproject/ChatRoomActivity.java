@@ -43,20 +43,17 @@ public class ChatRoomActivity extends AppCompatActivity {
 
         // listener for send messages
         final Button sendMessage = (Button) findViewById(R.id.sendMessage);
-        sendMessage.setOnClickListener(new View.OnClickListener(){
-            public void onClick(View v){
-                EditText message = (EditText) findViewById(R.id.messageToSend);
-                String msgString = message.getText().toString();
+        sendMessage.setOnClickListener(view -> {
+            EditText message = (EditText) findViewById(R.id.messageToSend);
+            String msgString = message.getText().toString();
 
-                MessageC toSend = new MessageC(myName, msgString, System.currentTimeMillis());
-                String msg = toSend.toString();
+            MessageC toSend = new MessageC(myName,
+                                           msgString,
+                                           System.currentTimeMillis());
+            RequestHandler.sendMessage(toSend);
 
-                //sendMsg(MessageC.toTCPString) -- send message to middle man
-                RequestHandler.sendMessage(new MessageC(myName, msg, System.currentTimeMillis()));
+            //maybe TODO - update chatList
 
-                //maybe TODO - update chatList
-
-            }
         });
 
     }
@@ -75,11 +72,6 @@ public class ChatRoomActivity extends AppCompatActivity {
                 else{
 
                 }
-
-
-
-
-
             }
         }
     };
