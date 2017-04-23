@@ -58,7 +58,7 @@ public class ChatRoomActivity extends AppCompatActivity {
             EditText message = (EditText) findViewById(R.id.messageToSend);
             String msgString = message.getText().toString();
 
-            if(msgString.contains("/n")){
+            if(msgString.contains("\n")){
                 //don't send
             }
             else{
