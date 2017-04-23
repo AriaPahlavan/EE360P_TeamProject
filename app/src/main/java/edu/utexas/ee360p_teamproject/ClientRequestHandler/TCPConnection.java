@@ -64,7 +64,10 @@ class TCPConnection {
                     log(SENT);
                     break;
                 case ClientTask.SEND:
-                    if (port==8080) Log.e(TAG, "have not entered a chatroom yet");
+                    if (port==8080) {
+                        Log.e(TAG, "have not entered a chatroom yet");
+                        return;
+                    }
 
                     Log.d(TAG, "Sending new message: " + command);
                     sendMessage(command,
@@ -72,7 +75,10 @@ class TCPConnection {
                     Log.d(TAG, "message was sent");
                     break;
                 case ClientTask.UPDATE:
-                    if (port==8080) Log.e(TAG, "have not entered a chatroom yet");
+                    if (port==8080) {
+                        Log.e(TAG, "have not entered a chatroom yet");
+                        return;
+                    }
 
                     Log.d(TAG, "checking for notifications, current count: " + command);
                     serverResponse = getNotifications(clientSocket);

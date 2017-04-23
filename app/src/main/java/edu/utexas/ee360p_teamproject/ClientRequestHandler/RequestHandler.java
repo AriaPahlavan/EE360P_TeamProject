@@ -89,12 +89,20 @@ public class RequestHandler {
                             .get()
                             .responseIfAvailable();
 
+            if (messagesStr==null || messagesStr.isEmpty())
+                return new ArrayList<>();
+
             int msgCount = Integer.parseInt(messagesStr.remove(0));
 
             for (int i = 0; i < msgCount; i++) {
+                if (messagesStr.isEmpty()) return new ArrayList<>(); //error
                 String timeStamp = messagesStr.remove(0);
-                String author    = messagesStr.remove(0);
-                String msg       = messagesStr.remove(0);
+
+                if (messagesStr.isEmpty()) return new ArrayList<>(); //error
+                String author = messagesStr.remove(0);
+
+                if (messagesStr.isEmpty()) return new ArrayList<>(); //error
+                String msg = messagesStr.remove(0);
 
                 MessageC curMessage = new MessageC(author,
                                                    msg,
