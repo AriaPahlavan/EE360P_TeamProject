@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import java.util.ArrayList;
 
 
 public class ChatRoomActivity extends AppCompatActivity {
@@ -14,6 +13,7 @@ public class ChatRoomActivity extends AppCompatActivity {
     String myName;
     int portNumber;
     int messagesReceived;
+    Thread notificatonHandler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,6 +32,7 @@ public class ChatRoomActivity extends AppCompatActivity {
             //sends messages received to server
             //waits for server to respond for new messages
             //display new messages
+        notificatonHandler = new Thread(runnable);
 
         // listener for send messages
         final Button sendMessage = (Button) findViewById(R.id.sendMessage);
@@ -48,7 +49,16 @@ public class ChatRoomActivity extends AppCompatActivity {
             }
         });
 
-
     }
+
+    Runnable runnable = new Runnable() {
+        @Override
+        public void run() {
+            while (true){
+                //call function to get updates
+                //add new messages in a queue
+            }
+        }
+    };
 
 }
