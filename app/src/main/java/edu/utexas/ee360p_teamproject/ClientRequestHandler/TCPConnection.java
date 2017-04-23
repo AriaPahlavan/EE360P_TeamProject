@@ -16,10 +16,11 @@ import static edu.utexas.ee360p_teamproject.ClientRequestHandler.TCPConnection.C
 
 class TCPConnection {
     private static final String TAG = "TCPConnection";
+    private static ClientSocket coordinator;
     private static int port   = 8080;
     private final static String ip  = "10.0.2.2";
     private String command, tag;
-    private boolean isReady;
+    private boolean readyFlag;
     private List<String> resposne;
 
     enum ConnectionStatus{
@@ -33,13 +34,7 @@ class TCPConnection {
     TCPConnection(String tag, String command) {
         this.tag = tag;
         this.command  = command;
-        this.isReady = false;
-    }
-
-    public List<String> responseIfAvailable(){
-        while (!isReady) {}
-
-        return resposne;
+        this.readyFlag = false;
     }
 
     void run() {
@@ -51,17 +46,20 @@ class TCPConnection {
         try {
             log(SENDING);
 
-            clientSocket = new ClientSocket(ip, port);
+            clientSocket = tag.equals(ClientTask.ROOM) ? coordinator
+                                                       : new ClientSocket(ip, port);
             switch (tag) {
                 case ClientTask.INIT:
                     Log.d(TAG, "Initializing...");
                     serverResponse = initializeServer(clientSocket);
+                    coordinator = clientSocket;
                     break;
                 case ClientTask.ROOM:
                     Log.d(TAG, "Selecting room: " + command);
                     selectChatroom(clientSocket);
                     Log.d(TAG, "Changed port to " + port);
                     log(SENT);
+                    // TODO: 4/23/17 kill coordinator connection connection?
                     break;
                 case ClientTask.SEND:
                     if (port==8080) {
@@ -94,11 +92,31 @@ class TCPConnection {
             e.printStackTrace();
 
         } finally {
+            // TODO: 4/23/17 should socket be closed?
             Log.d(TAG, "Socket Closed");
         }
 
         resposne = serverResponse;
-        isReady = true;
+        setReadyFlag();
+    }
+
+    public List<String> responseIfAvailable(){
+        while (!isResultReady()) {}
+
+        unsetReadyFlag();
+        return resposne;
+    }
+
+    private synchronized boolean isResultReady(){
+        return readyFlag;
+    }
+
+    private synchronized void setReadyFlag(){
+        readyFlag =true;
+    }
+
+    private synchronized void unsetReadyFlag(){
+        readyFlag =false;
     }
 
     private List<String> initializeServer(ClientSocket clientSocket) throws IOException {
