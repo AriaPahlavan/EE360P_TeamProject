@@ -54,6 +54,7 @@ public class MainActivity extends AppCompatActivity {
 
         Bundle extras = new Bundle();
         extras.putString("EXTRA_USERNAME", name);
+        extras.putString("EXTRA_ROOM", room);
         intent.putExtras(extras);
 
 

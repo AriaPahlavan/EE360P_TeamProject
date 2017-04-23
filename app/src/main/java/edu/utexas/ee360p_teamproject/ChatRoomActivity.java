@@ -19,6 +19,7 @@ import edu.utexas.ee360p_teamproject.ClientRequestHandler.RequestHandler;
 public class ChatRoomActivity extends AppCompatActivity {
 
     private String myName;
+    private String thisRoom;
     private int portNumber;
     private int messagesReceived;
     private Thread notificatonHandler;
@@ -38,7 +39,11 @@ public class ChatRoomActivity extends AppCompatActivity {
         Bundle extras = intent.getExtras();
         //receive port number and name
         myName = extras.getString("EXTRA_USERNAME");
+        thisRoom = extras.getString("EXTRA_ROOM");
         messagesReceived = 0;
+
+        EditText chatRoom = (EditText) findViewById(R.id.chatRoomTitle);
+        chatRoom.setText(thisRoom);
 
         notificatonHandler = new Thread(runnable);
 
