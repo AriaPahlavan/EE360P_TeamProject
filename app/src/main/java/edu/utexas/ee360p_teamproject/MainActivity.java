@@ -16,10 +16,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import edu.utexas.ee360p_teamproject.ClientRequestHandler.RequestHandler;
+import edu.utexas.ee360p_teamproject.ClientRequestHandler.TCPConnection;
 
 public class MainActivity extends AppCompatActivity {
     private final static String TAG = "MainActivity";
     private TextView t;
+    private Spinner roomSelector;
 
     public static final String EXTRA_MESSAGE = "com.example.chatroomclient.MESSAGE";
 
@@ -27,25 +29,29 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        ///comment
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Spinner roomSelector = (Spinner)findViewById(R.id.chatRoomSelector);
+        roomSelector = (Spinner)findViewById(R.id.chatRoomSelector);
 
-        //ask coordinator for available rooms in strings and replace rooms below with those strings
+        initializeChatroomDropdown();
+    }
 
+    private void initializeChatroomDropdown() {
         List<String> chatrooms = RequestHandler.listOfAllRooms();
         chatrooms.add("Other");
         String[] items = chatrooms.toArray(new String[chatrooms.size()]);
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, items);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, items);
         roomSelector.setAdapter(adapter);
-
-        //from Aria
-//        testConnectionToServer();
     }
 
-
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Log.d(TAG, "start - setting port to 8080");
+        TCPConnection.port = 8080;
+        initializeChatroomDropdown();
+    }
 
     public void enterRoom(View view){
         Intent intent = new Intent(this, ChatRoomActivity.class);
@@ -145,6 +151,4 @@ public class MainActivity extends AppCompatActivity {
             notifications.forEach(notification -> Log.d(TAG, "notification: " + notification));
         }
     }
-
-
 }
