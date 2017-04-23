@@ -57,7 +57,14 @@ public class ChatRoomActivity extends AppCompatActivity {
             EditText message = (EditText) findViewById(R.id.messageToSend);
             String msgString = message.getText().toString();
 
-            displayNewMessage(msgString);
+            if(msgString.contains("/n")){
+                //don't send
+            }
+            else{
+                displayNewMessage(msgString);
+                message.setText("");
+            }
+
         });
 
     }
@@ -66,6 +73,7 @@ public class ChatRoomActivity extends AppCompatActivity {
         MessageC toSend = new MessageC(myName,
                                        msgString,
                                        System.currentTimeMillis());
+
         RequestHandler.sendMessage(toSend);
 
         //call function to get updates
@@ -79,7 +87,12 @@ public class ChatRoomActivity extends AppCompatActivity {
 
             ListView chatList = (ListView) findViewById(R.id.chatList);
             for(int i=0; i<notifications.size(); i++){
-                String totalChat = notifications.get(i).timestamp + " " + notifications.get(i).author+": " + notifications.get(i).content;
+                long milliseconds = notifications.get(i).timestamp;
+                int minutes = (int) ((milliseconds / (1000*60)) % 60);
+                int hours   = (int) ((milliseconds / (1000*60*60)) % 24);
+
+
+                String totalChat = hours+":"+minutes+ " " + notifications.get(i).author+": " + notifications.get(i).content;
                 chats.add(totalChat);
                 messagesReceived++;
             }

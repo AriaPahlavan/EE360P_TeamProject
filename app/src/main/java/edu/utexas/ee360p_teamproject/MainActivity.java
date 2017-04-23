@@ -1,6 +1,8 @@
 package edu.utexas.ee360p_teamproject;
 
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -32,6 +34,7 @@ public class MainActivity extends AppCompatActivity {
         Spinner roomSelector = (Spinner)findViewById(R.id.chatRoomSelector);
 
         //ask coordinator for available rooms in strings and replace rooms below with those strings
+
         List<String> chatrooms = RequestHandler.listOfAllRooms();
         chatrooms.add("Other");
         String[] items = chatrooms.toArray(new String[chatrooms.size()]);
@@ -52,16 +55,55 @@ public class MainActivity extends AppCompatActivity {
         Spinner roomSelector = (Spinner)findViewById(R.id.chatRoomSelector);
         String room = roomSelector.getSelectedItem().toString();
 
-        // setRoom(String)  send chosen chatroom to middle man who will comment client to chatroom
-        RequestHandler.enterChatroom(room);
+        if(room == "Other"){
+            AlertDialog.Builder alert = new AlertDialog.Builder(this);
 
-        Bundle extras = new Bundle();
-        extras.putString("EXTRA_USERNAME", name);
-        extras.putString("EXTRA_ROOM", room);
-        intent.putExtras(extras);
+            alert.setTitle("New Chat Room");
+            alert.setMessage("Enter Chat Room Name");
+
+            // Set an EditText view to get user input
+            final EditText input = new EditText(this);
+            alert.setView(input);
+
+            alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int whichButton) {
 
 
-        startActivity(intent);
+                    String newRoom = input.getText().toString();
+                    RequestHandler.enterChatroom(newRoom);
+
+                    Bundle extras = new Bundle();
+                    extras.putString("EXTRA_USERNAME", name);
+                    extras.putString("EXTRA_ROOM", newRoom);
+                    intent.putExtras(extras);
+
+
+                    startActivity(intent);
+                }
+            });
+
+            alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int whichButton) {
+                    // Canceled.
+                }
+            });
+
+            alert.show();
+        }
+        else{
+            // setRoom(String)  send chosen chatroom to middle man who will comment client to chatroom
+            RequestHandler.enterChatroom(room);
+
+            Bundle extras = new Bundle();
+            extras.putString("EXTRA_USERNAME", name);
+            extras.putString("EXTRA_ROOM", room);
+            intent.putExtras(extras);
+
+
+            startActivity(intent);
+        }
+
+
     }
 
     /**
