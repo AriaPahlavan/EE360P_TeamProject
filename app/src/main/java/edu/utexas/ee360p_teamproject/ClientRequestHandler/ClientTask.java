@@ -1,12 +1,7 @@
-package edu.utexas.ee360p_teamproject;
+package edu.utexas.ee360p_teamproject.ClientRequestHandler;
 
 import android.os.AsyncTask;
-import android.os.Build;
-import android.os.Handler;
-import android.support.annotation.RequiresApi;
 import android.util.Log;
-
-import java.util.Arrays;
 
 /**
  * Created by aria on 4/21/17.
@@ -65,13 +60,8 @@ class ClientTask extends AsyncTask<String, String, TCPConnection> {
         super.onPostExecute(tcpClient);
     }
 
-    // TODO: 4/22/17 remove build.version limit
-    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     protected void onProgressUpdate(String... values) {
         super.onProgressUpdate(values);
-
-        Arrays.stream(values)
-              .forEachOrdered(msg -> Log.d(TAG, msg));
     }
 }

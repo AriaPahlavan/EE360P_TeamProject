@@ -6,7 +6,8 @@ import android.util.Log;
 import android.widget.TextView;
 
 import java.util.List;
-import java.util.concurrent.ExecutionException;
+
+import edu.utexas.ee360p_teamproject.ClientRequestHandler.RequestHandler;
 
 public class MainActivity extends AppCompatActivity {
     private final static String TAG = "MainActivity";
@@ -21,13 +22,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void testConnectionToServer() {
-        try {
-            List<String> result = new ClientTask(ClientTask.INIT, null).execute().get().run();
+        List<String> result = RequestHandler.listOfAllRooms();
 
+        if (result != null)
             result.forEach(s -> Log.d(TAG, s));
-        }
-        catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
-        }
+        else Log.d(TAG, "No rooms received from server :(");
     }
 }

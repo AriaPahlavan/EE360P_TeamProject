@@ -9,7 +9,7 @@ public class MessageC {
     String content;
     long timestamp; //System.currentTimeMillis()
 
-    MessageC(String name, String msg, long ts){
+    public MessageC(String name, String msg, long ts){
         this.author=name;
         this.content=msg;
         this.timestamp=ts;
