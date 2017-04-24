@@ -3,8 +3,6 @@ package edu.utexas.ee360p_teamproject;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
-import android.os.Handler;
-import android.os.Looper;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -28,7 +26,7 @@ public class ChatRoomActivity extends AppCompatActivity {
     private String myName;
     private int messagesReceived;
     private Thread notificatonHandler;
-    private AsyncTask<Integer, List<MessageC>, String> notificationTask;
+    private AsyncTask<Integer, MessageC, String> notificationTask;
 
     private List<String> chats = new ArrayList<>();
     private Context context;
@@ -60,20 +58,39 @@ public class ChatRoomActivity extends AppCompatActivity {
 
         final Button sendMessage = (Button) findViewById(R.id.sendMessage);
 
-//        notificationTask = new NotificationTask(this::displayAsConsumer).execute();
+        notificationTask = new NotificationTask().execute();
 
-        sendMessage.setOnClickListener(view -> sendIfValid(message));
+        sendMessage.setOnClickListener(view -> {
+            notificationTask.cancel(true); //stop pull notification
+
+            sendIfValid(message);
+
+            notificationTask = new NotificationTask().execute();
+        });
 
         message.setOnEditorActionListener((v, actionId, event) -> {
+            notificationTask.cancel(true); //stop pull notification
+
             boolean handled = false;
             if (actionId == EditorInfo.IME_ACTION_SEND) {
                 sendIfValid(message);
                 handled = true;
             }
+
+            // restart pull notification
+            notificationTask = new NotificationTask().execute();
+
             return handled;
         });
 
-        findViewById(R.id.Refresh).setOnClickListener(v -> displayNewNotifications());
+        findViewById(R.id.Refresh).setOnClickListener(v -> {
+            notificationTask.cancel(true); //stop pull notification
+
+            displayNewNotifications();
+
+            // restart pull notification
+            notificationTask = new NotificationTask().execute();
+        });
     }
 
     private void sendIfValid(EditText message) {
@@ -120,24 +137,23 @@ public class ChatRoomActivity extends AppCompatActivity {
         chatList.setAdapter(adapter);
     }
 
-    private void displayAsConsumer(List<MessageC> notifications){
+    private void displayAsConsumer(MessageC notification) {
         Log.d(TAG, "in consumer, received notification");
 
-        //add new messages in a queue
-        if ((notifications == null) || notifications.isEmpty())
-            return;
-
         ListView chatList = (ListView) findViewById(R.id.chatList);
-        for (int i = 0; i < notifications.size(); i++) {
-            long milliseconds = notifications.get(i).timestamp;
-            int minutes = (int) ((milliseconds / (1000 * 60)) % 60);
-            int hours = (int) ((milliseconds / (1000 * 60 * 60)) % 24);
+
+        long milliseconds = notification.timestamp;
+        int minutes = (int) ((milliseconds / (1000 * 60)) % 60);
+        int hours = (int) ((milliseconds / (1000 * 60 * 60)) % 24);
 
 
-            String totalChat = hours + ":" + minutes + " " + notifications.get(i).author + ": " + notifications.get(i).content;
-            chats.add(totalChat);
-            messagesReceived++;
-        }
+        String totalChat = hours + ":"
+                + minutes + " "
+                + notification.author + ": "
+                + notification.content;
+
+        chats.add(totalChat);
+        messagesReceived++;
 
         String[] values = chats.toArray(new String[chats.size()]);
 
@@ -146,66 +162,49 @@ public class ChatRoomActivity extends AppCompatActivity {
         chatList.setAdapter(adapter);
     }
 
-    public synchronized int currentMessageCount(){
+    public synchronized int currentMessageCount() {
         return messagesReceived;
     }
 
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-//        notificationTask.cancel(true);
+        notificationTask.cancel(true);
     }
 
 
-    private class NotificationTask extends AsyncTask<Integer, List<MessageC>, String> {
+    private class NotificationTask extends AsyncTask<Integer, MessageC, String> {
         private final String TAG = "NotificationTask";
-        MyConsumer<List<MessageC>> notifucationDisplayer;
-
-        public NotificationTask
-                (MyConsumer<List<MessageC>> notifucationDisplayer)
-        {
-            this.notifucationDisplayer = notifucationDisplayer;
-        }
 
         @Override
         protected String doInBackground(Integer... params) {
             Log.d(TAG, "getting notifications..");
 
-            while (true){
-                List<MessageC> notifications =
-                        RequestHandler.notifications(currentMessageCount());
+            while (true) {
 
-                if (notifications==null)
-                    continue;
-
-                Log.d(TAG, "got a notification!");
-                publishProgress(notifications);
+                RequestHandler.pullNotification(currentMessageCount(),
+                                                this::publishProgress);
 
                 try {
+                    Log.d(TAG, "about to go to sleep");
                     Thread.sleep(5000);
                 }
                 catch (InterruptedException e) {
                     Log.d(TAG, "thread interrupted!!");
+                    return null;
                 }
 
                 Log.d(TAG, "woke up to get more notifications");
             }
-//            return null;
         }
 
         @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-        }
-
-        @Override
-        protected final void onProgressUpdate(List<MessageC>... values) {
+        protected final void onProgressUpdate(MessageC... values) {
             super.onProgressUpdate(values);
 
             Log.d(TAG, "progress update with new notification");
 
-            this.notifucationDisplayer
-                    .accept(values[0]);
+            displayAsConsumer(values[0]);
         }
 
         @Override

@@ -18,7 +18,7 @@ public class TCPConnection {
     private static final String TAG = "TCPConnection";
     private static ClientSocket coordinator;
     public static int port   = 8080;
-    private final static String ip  = "192.168.1.2";//"10.145.49.170"; //"10.0.2.2";
+    private final static String ip  = "10.146.201.172";//"10.145.165.162"; //"192.168.1.2";//"10.145.49.170"; //"10.0.2.2";
     private String command, tag;
     private boolean readyFlag;
     private List<String> resposne;
@@ -71,6 +71,9 @@ public class TCPConnection {
                     sendMessage(command,
                                 clientSocket.outStream());
                     Log.d(TAG, "message was sent");
+
+                    clientSocket.closeSocket();
+                    Log.d(TAG, "Socket Closed");
                     break;
                 case ClientTask.UPDATE:
                     if (port==8080) {
@@ -83,6 +86,9 @@ public class TCPConnection {
 
                     if (serverResponse!=null && !serverResponse.isEmpty())
                         Log.d(TAG, serverResponse.get(0) + "new notifications received");
+
+                    clientSocket.closeSocket();
+                    Log.d(TAG, "Socket Closed");
                     break;
             }
             log(DONE);
@@ -90,10 +96,6 @@ public class TCPConnection {
         catch (Exception e) {
             log(ERROR);
             e.printStackTrace();
-
-        } finally {
-            // TODO: 4/23/17 should socket be closed?
-            Log.d(TAG, "Socket Closed");
         }
 
         resposne = serverResponse;
