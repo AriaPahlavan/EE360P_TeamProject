@@ -2,8 +2,12 @@ package edu.utexas.ee360p_teamproject;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.inputmethod.EditorInfo;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -20,10 +24,11 @@ import static java.lang.Thread.sleep;
 
 
 public class ChatRoomActivity extends AppCompatActivity {
-
+    private final static String TAG = "ChatroomActivity";
     private String myName;
     private int messagesReceived;
     private Thread notificatonHandler;
+    private AsyncTask<Integer, List<MessageC>, String> notificationTask;
 
     private List<String> chats = new ArrayList<>();
     private Context context;
@@ -53,12 +58,9 @@ public class ChatRoomActivity extends AppCompatActivity {
         displayNewNotifications();
 
 
-//        notificatonHandler = new Thread(runnable);
-//        notificatonHandler.start();
-
-
-        // listener for send messages
         final Button sendMessage = (Button) findViewById(R.id.sendMessage);
+
+//        notificationTask = new NotificationTask(this::displayAsConsumer).execute();
 
         sendMessage.setOnClickListener(view -> sendIfValid(message));
 
@@ -71,6 +73,7 @@ public class ChatRoomActivity extends AppCompatActivity {
             return handled;
         });
 
+        findViewById(R.id.Refresh).setOnClickListener(v -> displayNewNotifications());
     }
 
     private void sendIfValid(EditText message) {
@@ -80,11 +83,6 @@ public class ChatRoomActivity extends AppCompatActivity {
 
         displayNewMessage(msgString);
         message.setText("");
-    }
-
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
     }
 
     private void displayNewMessage(String msgString) {
@@ -122,38 +120,97 @@ public class ChatRoomActivity extends AppCompatActivity {
         chatList.setAdapter(adapter);
     }
 
-//    Runnable runnable = () -> {
-//
-//        while (true) {
-//            //call function to get updates
-//            List<MessageC> notifications = RequestHandler.notifications(messagesReceived);
-//
-//            //no new messages received
-//            if ((notifications == null) || notifications.isEmpty())
-//                continue;
-//
-//            //add new messages in a queue
-//            ListView chatList = (ListView) findViewById(R.id.chatList);
-//            for (int i = 0; i < notifications.size(); i++) {
-//                String totalChat = notifications.get(i).timestamp + " " + notifications.get(i).author + ": " + notifications.get(i).content;
-//                chats.add(totalChat);
-//                messagesReceived++;
-//            }
-//
-//            String[] values = chats.toArray(new String[chats.size()]);
-//
-//            ArrayAdapter<String> adapter = new ArrayAdapter<>(context, android.R.layout.simple_list_item_1, android.R.id.text1, values);
-//
-//            chatList.setAdapter(adapter);
-//
-//            try {
-//                Thread.sleep(5000);
-//            }
-//            catch (InterruptedException e) {
-//                e.printStackTrace();
-//            }
-//        }
-//
-//    };
+    private void displayAsConsumer(List<MessageC> notifications){
+        Log.d(TAG, "in consumer, received notification");
 
+        //add new messages in a queue
+        if ((notifications == null) || notifications.isEmpty())
+            return;
+
+        ListView chatList = (ListView) findViewById(R.id.chatList);
+        for (int i = 0; i < notifications.size(); i++) {
+            long milliseconds = notifications.get(i).timestamp;
+            int minutes = (int) ((milliseconds / (1000 * 60)) % 60);
+            int hours = (int) ((milliseconds / (1000 * 60 * 60)) % 24);
+
+
+            String totalChat = hours + ":" + minutes + " " + notifications.get(i).author + ": " + notifications.get(i).content;
+            chats.add(totalChat);
+            messagesReceived++;
+        }
+
+        String[] values = chats.toArray(new String[chats.size()]);
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(context, android.R.layout.simple_list_item_1, android.R.id.text1, values);
+
+        chatList.setAdapter(adapter);
+    }
+
+    public synchronized int currentMessageCount(){
+        return messagesReceived;
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+//        notificationTask.cancel(true);
+    }
+
+
+    private class NotificationTask extends AsyncTask<Integer, List<MessageC>, String> {
+        private final String TAG = "NotificationTask";
+        MyConsumer<List<MessageC>> notifucationDisplayer;
+
+        public NotificationTask
+                (MyConsumer<List<MessageC>> notifucationDisplayer)
+        {
+            this.notifucationDisplayer = notifucationDisplayer;
+        }
+
+        @Override
+        protected String doInBackground(Integer... params) {
+            Log.d(TAG, "getting notifications..");
+
+            while (true){
+                List<MessageC> notifications =
+                        RequestHandler.notifications(currentMessageCount());
+
+                if (notifications==null)
+                    continue;
+
+                Log.d(TAG, "got a notification!");
+                publishProgress(notifications);
+
+                try {
+                    Thread.sleep(5000);
+                }
+                catch (InterruptedException e) {
+                    Log.d(TAG, "thread interrupted!!");
+                }
+
+                Log.d(TAG, "woke up to get more notifications");
+            }
+//            return null;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected final void onProgressUpdate(List<MessageC>... values) {
+            super.onProgressUpdate(values);
+
+            Log.d(TAG, "progress update with new notification");
+
+            this.notifucationDisplayer
+                    .accept(values[0]);
+        }
+
+        @Override
+        protected void onCancelled() {
+            super.onCancelled();
+        }
+    }
 }
