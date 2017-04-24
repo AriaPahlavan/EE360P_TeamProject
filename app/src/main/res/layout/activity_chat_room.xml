@@ -39,7 +39,9 @@
         android:layout_height="match_parent"
         android:layout_above="@+id/messageToSend"
         android:layout_alignParentStart="true"
-        android:layout_below="@+id/chatRoomTitle" />
+        android:layout_below="@+id/chatRoomTitle"
+        android:transcriptMode="alwaysScroll"
+        android:stackFromBottom="true"/>
 
     <TextView
         android:id="@+id/chatRoomTitle"

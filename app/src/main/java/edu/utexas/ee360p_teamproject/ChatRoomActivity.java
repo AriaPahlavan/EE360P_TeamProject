@@ -83,14 +83,14 @@ public class ChatRoomActivity extends AppCompatActivity {
             return handled;
         });
 
-        findViewById(R.id.Refresh).setOnClickListener(v -> {
-            notificationTask.cancel(true); //stop pull notification
-
-            displayNewNotifications();
-
-            // restart pull notification
-            notificationTask = new NotificationTask().execute();
-        });
+//        findViewById(R.id.Refresh).setOnClickListener(v -> {
+//            notificationTask.cancel(true); //stop pull notification
+//
+//            displayNewNotifications();
+//
+//            // restart pull notification
+//            notificationTask = new NotificationTask().execute();
+//        });
     }
 
     private void sendIfValid(EditText message) {
