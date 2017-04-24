@@ -1,5 +1,6 @@
 package edu.utexas.ee360p_teamproject;
 
+import java.util.ArrayList;
 /**
  * Created by Bailey on 4/22/2017.
  */
@@ -23,7 +24,8 @@ public class MessageC {
         sendable += author;
         sendable +="\n";
         sendable += content;
-
+        //timestamp\nAuthor\nContent
+        //timestamp = Long.toString(System.currentTimeMillis())
         return sendable;
     }
 }
