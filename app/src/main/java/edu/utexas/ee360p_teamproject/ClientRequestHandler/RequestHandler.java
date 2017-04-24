@@ -18,8 +18,9 @@ public class RequestHandler {
     /**
      * initializes connection to sever and gets a list of all available chatrooms
      *
+     *
      * @return a list of all available chatrooms, or null
-     * if failed to connect with server
+     *          if failed to connect with server
      */
     public static List<String> listOfAllRooms() {
         try {
@@ -36,6 +37,7 @@ public class RequestHandler {
 
     /**
      * selects a chatroom based on the NAME
+     *
      *
      * @param name name of the chatroom to enter
      */
@@ -71,11 +73,13 @@ public class RequestHandler {
      * checks with server for any notifications
      *
      * @param count current count of messages recoded in the chatroom
+     *
+     *
      * @return a list of new messages from the server,
-     * or null failed to connect with server.
-     * <p>
-     * NOTE: if there are no updates, the list of messages returned
-     * will be empty
+     *         or null failed to connect with server.
+     *
+     *         NOTE: if there are no updates, the list of messages returned
+     *         will be empty
      */
     public static List<MessageC> notifications(int count) {
         try {
