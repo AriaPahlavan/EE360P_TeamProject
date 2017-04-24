@@ -54,15 +54,15 @@
         android:textAlignment="center"
         android:textSize="24sp"/>
 
-    <Button
-        android:id="@+id/Refresh"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_below="@+id/messageToSend"
-        android:layout_marginEnd="30dp"
-        android:text="↺"
-        android:textSize="24sp"
-        />
+    <!--<Button-->
+        <!--android:id="@+id/Refresh"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_alignParentEnd="true"-->
+        <!--android:layout_below="@+id/messageToSend"-->
+        <!--android:layout_marginEnd="30dp"-->
+        <!--android:text="↺"-->
+        <!--android:textSize="24sp"-->
+        <!--/>-->
 
 </RelativeLayout>
