@@ -39,6 +39,10 @@ public class MainActivity extends AppCompatActivity {
 
     private void initializeChatroomDropdown() {
         List<String> chatrooms = RequestHandler.listOfAllRooms();
+
+        if (chatrooms==null)
+            return;
+
         chatrooms.add("Other");
         String[] items = chatrooms.toArray(new String[chatrooms.size()]);
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, items);
@@ -58,10 +62,13 @@ public class MainActivity extends AppCompatActivity {
         EditText username = (EditText) findViewById(R.id.editUsername);
         String name = username.getText().toString();
 
+        if (name.equals(""))
+            return;
+
         Spinner roomSelector = (Spinner)findViewById(R.id.chatRoomSelector);
         String room = roomSelector.getSelectedItem().toString();
 
-        if(room == "Other"){
+        if(room.equals("Other")){
             AlertDialog.Builder alert = new AlertDialog.Builder(this);
 
             alert.setTitle("New Chat Room");
@@ -71,27 +78,23 @@ public class MainActivity extends AppCompatActivity {
             final EditText input = new EditText(this);
             alert.setView(input);
 
-            alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int whichButton) {
+            alert.setPositiveButton("Ok", (dialog, whichButton) -> {
 
 
-                    String newRoom = input.getText().toString();
-                    RequestHandler.enterChatroom(newRoom);
+                String newRoom = input.getText().toString();
+                RequestHandler.enterChatroom(newRoom);
 
-                    Bundle extras = new Bundle();
-                    extras.putString("EXTRA_USERNAME", name);
-                    extras.putString("EXTRA_ROOM", newRoom);
-                    intent.putExtras(extras);
+                Bundle extras = new Bundle();
+                extras.putString("EXTRA_USERNAME", name);
+                extras.putString("EXTRA_ROOM", newRoom);
+                intent.putExtras(extras);
 
 
-                    startActivity(intent);
-                }
+                startActivity(intent);
             });
 
-            alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int whichButton) {
-                    // Canceled.
-                }
+            alert.setNegativeButton("Cancel", (dialog, whichButton) -> {
+                // Canceled.
             });
 
             alert.show();
