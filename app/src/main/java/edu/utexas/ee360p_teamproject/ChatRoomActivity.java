@@ -113,7 +113,7 @@ public class ChatRoomActivity extends AppCompatActivity {
         for (int i = 0; i < notifications.size(); i++) {
             long milliseconds = notifications.get(i).timestamp;
             int minutes = (int) ((milliseconds / (1000 * 60)) % 60);
-            int hours = (int) ((milliseconds / (1000 * 60 * 60)) % 24);
+            int hours = (int) ((milliseconds / (1000 * 60 * 60)) % 24) - 5;
 
 
             String totalChat = hours + ":" + minutes + " " + notifications.get(i).author + ": " + notifications.get(i).content;
@@ -135,7 +135,7 @@ public class ChatRoomActivity extends AppCompatActivity {
 
         long milliseconds = notification.timestamp;
         int minutes = (int) ((milliseconds / (1000 * 60)) % 60);
-        int hours = (int) ((milliseconds / (1000 * 60 * 60)) % 24);
+        int hours = (int) ((milliseconds / (1000 * 60 * 60)) % 24) - 5;
 
 
         String totalChat = hours + ":"
