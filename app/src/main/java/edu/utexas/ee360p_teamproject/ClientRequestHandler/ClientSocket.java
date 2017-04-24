@@ -30,4 +30,13 @@ class ClientSocket {
     public PrintWriter outStream() {
         return out;
     }
+
+    public void closeSocket() {
+        try {
+            clientSocket.close();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }

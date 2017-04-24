@@ -1,3 +1,4 @@
 <resources>
-    <string name="app_name">EE360P_TeamProject</string>
+    <string name="app_name">freechat</string>
+    <string name="chat_room_name"><![CDATA[<Chat Room Name>]]></string>
 </resources>
