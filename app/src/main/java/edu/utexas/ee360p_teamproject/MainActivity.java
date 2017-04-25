@@ -49,7 +49,11 @@ public class MainActivity extends AppCompatActivity {
 
         chatrooms.add("Other");
         String[] items = chatrooms.toArray(new String[chatrooms.size()]);
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, items);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
+                                                          android.R
+                                                                  .layout
+                                                                  .simple_spinner_dropdown_item,
+                                                          items);
         roomSelector.setAdapter(adapter);
     }
 
@@ -62,9 +66,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void enterRoom(View view){
-        Intent intent = new Intent(this, ChatRoomActivity.class);
+        final Intent intent = new Intent(this, ChatRoomActivity.class);
         EditText username = (EditText) findViewById(R.id.editUsername);
-        String name = username.getText().toString();
+        final String name = username.getText().toString();
 
         if (name.equals(""))
             return;
@@ -82,23 +86,29 @@ public class MainActivity extends AppCompatActivity {
             final EditText input = new EditText(this);
             alert.setView(input);
 
-            alert.setPositiveButton("Ok", (dialog, whichButton) -> {
+            alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int whichButton) {
 
 
-                String newRoom = input.getText().toString();
-                RequestHandler.enterChatroom(newRoom);
+                    String newRoom = input.getText().toString();
+                    RequestHandler.enterChatroom(newRoom);
 
-                Bundle extras = new Bundle();
-                extras.putString("EXTRA_USERNAME", name);
-                extras.putString("EXTRA_ROOM", newRoom);
-                intent.putExtras(extras);
+                    Bundle extras = new Bundle();
+                    extras.putString("EXTRA_USERNAME", name);
+                    extras.putString("EXTRA_ROOM", newRoom);
+                    intent.putExtras(extras);
 
 
-                startActivity(intent);
+                    MainActivity.this.startActivity(intent);
+                }
             });
 
-            alert.setNegativeButton("Cancel", (dialog, whichButton) -> {
-                // Canceled.
+            alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int whichButton) {
+                    // Canceled.
+                }
             });
 
             alert.show();
@@ -117,45 +127,5 @@ public class MainActivity extends AppCompatActivity {
         }
 
 
-    }
-
-    /**
-     * This is just to demo the usage of RequestHandler class
-     */
-    private void testConnectionToServer() {
-        //getting the list of all available chatrooms
-        List<String> chatrooms = RequestHandler.listOfAllRooms();
-
-        if (chatrooms == null){
-            //server connection failed
-            Log.d(TAG, "connections failed :(");
-        }
-        else if(chatrooms.isEmpty()){
-            //no rooms available (this is an error)
-            Log.d(TAG, "No rooms received from server :(");
-        }else {
-            chatrooms.forEach(chatroom -> Log.d(TAG, "chatroom: " + chatroom));
-        }
-
-        //choosing a chatroom to enter
-        RequestHandler.enterChatroom("Default");
-
-        //sending a new message to current chatroom
-        RequestHandler.sendMessage(new MessageC("Aria", "Hello bananas!", System.currentTimeMillis()));
-
-        //getting new notifications
-        List<MessageC> notifications = RequestHandler.notifications(0);
-        if (notifications == null){
-            //server connection failed
-            Log.d(TAG, "connections failed :(");
-        }
-        else if (notifications.isEmpty()){
-            //no new notifications
-            Log.d(TAG, "no new notification available :(");
-        }
-        else {
-            //you have new notifications
-            notifications.forEach(notification -> Log.d(TAG, "notification: " + notification));
-        }
     }
 }

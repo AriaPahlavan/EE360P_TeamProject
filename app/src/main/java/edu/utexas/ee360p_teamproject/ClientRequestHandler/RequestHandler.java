@@ -158,7 +158,6 @@ public class RequestHandler {
         }
     }
 
-    @FunctionalInterface
     public interface MessageCallback {
         void callBackMessageReceiver(MessageC notification);
     }

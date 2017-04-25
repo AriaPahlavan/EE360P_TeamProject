@@ -6,6 +6,8 @@ import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyEvent;
+import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -48,7 +50,7 @@ public class ChatRoomActivity extends AppCompatActivity {
         context = getApplicationContext();
 
         TextView chatRoom = (TextView) findViewById(R.id.chatRoomTitle);
-        EditText message = (EditText) findViewById(R.id.messageToSend);
+        final EditText message = (EditText) findViewById(R.id.messageToSend);
 
         chatRoom.setText(thisRoom);
 
@@ -60,27 +62,33 @@ public class ChatRoomActivity extends AppCompatActivity {
 
         notificationTask = new NotificationTask().execute();
 
-        sendMessage.setOnClickListener(view -> {
-            notificationTask.cancel(true); //stop pull notification
+        sendMessage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                notificationTask.cancel(true); //stop pull notification
 
-            sendIfValid(message);
+                ChatRoomActivity.this.sendIfValid(message);
 
-            notificationTask = new NotificationTask().execute();
+                notificationTask = new NotificationTask().execute();
+            }
         });
 
-        message.setOnEditorActionListener((v, actionId, event) -> {
-            notificationTask.cancel(true); //stop pull notification
+        message.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                notificationTask.cancel(true); //stop pull notification
 
-            boolean handled = false;
-            if (actionId == EditorInfo.IME_ACTION_SEND) {
-                sendIfValid(message);
-                handled = true;
+                boolean handled = false;
+                if (actionId == EditorInfo.IME_ACTION_SEND) {
+                    ChatRoomActivity.this.sendIfValid(message);
+                    handled = true;
+                }
+
+                // restart pull notification
+                notificationTask = new NotificationTask().execute();
+
+                return handled;
             }
-
-            // restart pull notification
-            notificationTask = new NotificationTask().execute();
-
-            return handled;
         });
     }
 
@@ -115,15 +123,21 @@ public class ChatRoomActivity extends AppCompatActivity {
             int minutes = (int) ((milliseconds / (1000 * 60)) % 60);
             int hours = (int) ((milliseconds / (1000 * 60 * 60)) % 24) - 5;
 
+            if (hours<0) hours+=24;
 
-            String totalChat = hours + ":" + minutes + " " + notifications.get(i).author + ": " + notifications.get(i).content;
+            String totalChat = (hours<9 ? "0" : "") + hours + ":" +
+                    (minutes<9 ? "0" : "") + minutes + " " +
+                    notifications.get(i).author + ": " +
+                    notifications.get(i).content;
             chats.add(totalChat);
             messagesReceived++;
         }
 
         String[] values = chats.toArray(new String[chats.size()]);
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(context, android.R.layout.simple_list_item_1, android.R.id.text1, values);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(ChatRoomActivity.this,
+                                                          android.R.layout.simple_list_item_1,
+                                                          android.R.id.text1, values);
 
         chatList.setAdapter(adapter);
     }
@@ -137,8 +151,10 @@ public class ChatRoomActivity extends AppCompatActivity {
         int minutes = (int) ((milliseconds / (1000 * 60)) % 60);
         int hours = (int) ((milliseconds / (1000 * 60 * 60)) % 24) - 5;
 
+        if (hours<0) hours+=24;
 
-        String totalChat = hours + ":"
+        String totalChat = (hours<9 ? "0" : "") + hours + ":" +
+                (minutes<9 ? "0" : "")
                 + minutes + " "
                 + notification.author + ": "
                 + notification.content;
@@ -148,8 +164,9 @@ public class ChatRoomActivity extends AppCompatActivity {
 
         String[] values = chats.toArray(new String[chats.size()]);
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(context, android.R.layout.simple_list_item_1, android.R.id.text1, values);
-
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(ChatRoomActivity.this,
+                                                          android.R.layout.simple_list_item_1,
+                                                          android.R.id.text1, values);
         chatList.setAdapter(adapter);
     }
 
@@ -174,11 +191,16 @@ public class ChatRoomActivity extends AppCompatActivity {
             while (true) {
 
                 RequestHandler.pullNotification(currentMessageCount(),
-                                                this::publishProgress);
+                                                new RequestHandler.MessageCallback() {
+                                                    @Override
+                                                    public void callBackMessageReceiver(MessageC notification) {
+                                                        publishProgress(notification);
+                                                    }
+                                                });
 
                 try {
                     Log.d(TAG, "about to go to sleep");
-                    Thread.sleep(5000);
+                    Thread.sleep(3000);
                 }
                 catch (InterruptedException e) {
                     Log.d(TAG, "thread interrupted!!");

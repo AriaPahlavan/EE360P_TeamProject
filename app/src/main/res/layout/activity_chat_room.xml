@@ -35,13 +35,14 @@
 
     <ListView
         android:id="@+id/chatList"
+        style="@style/Widget.AppCompat.Light.ListView.DropDown"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@+id/messageToSend"
         android:layout_alignParentStart="true"
         android:layout_below="@+id/chatRoomTitle"
-        android:transcriptMode="alwaysScroll"
-        android:stackFromBottom="true"/>
+        android:stackFromBottom="true"
+        android:transcriptMode="alwaysScroll"/>
 
     <TextView
         android:id="@+id/chatRoomTitle"
@@ -54,15 +55,5 @@
         android:textAlignment="center"
         android:textSize="24sp"/>
 
-    <!--<Button-->
-        <!--android:id="@+id/Refresh"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_alignParentEnd="true"-->
-        <!--android:layout_below="@+id/messageToSend"-->
-        <!--android:layout_marginEnd="30dp"-->
-        <!--android:text="↺"-->
-        <!--android:textSize="24sp"-->
-        <!--/>-->
 
 </RelativeLayout>
