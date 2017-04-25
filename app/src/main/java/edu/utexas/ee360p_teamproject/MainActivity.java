@@ -38,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
 
         roomSelector = (Spinner)findViewById(R.id.chatRoomSelector);
 
-        initializeChatroomDropdown();
+//        initializeChatroomDropdown();
     }
 
     private void initializeChatroomDropdown() {
