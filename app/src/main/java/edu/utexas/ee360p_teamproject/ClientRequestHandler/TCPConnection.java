@@ -123,6 +123,7 @@ public class TCPConnection {
 
     private List<String> initializeServer(ClientSocket clientSocket) throws IOException {
         List<String> serverResponse = new ArrayList<>();
+        sendMessage("4rfcsql7tgbnwrty3u21", clientSocket.outStream());
 
         Log.d(TAG, "Getting count of avail rooms...");
         String response = clientSocket.inStream()
